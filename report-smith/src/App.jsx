@@ -1,19 +1,25 @@
-import { useEffect } from "react"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth } from "../firebase"
+import { Routes, Route, Navigate } from "react-router-dom"
+import Login from "./pages/Login"
+import Signup from "./pages/Signup"
+import Dashboard from "./pages/Dashboard"
+import NotFound from "./pages/NotFound"
+import ReportWizard from "./pages/ReportWizard"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      console.log("firebase user =>", user?.email || "no user")
-    })
-    return () => unsub()
-  }, [])
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <h1 className="text-3xl font-bold text-white">Report‑Smith</h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/app" element={<Dashboard />} />
+        <Route path="/reports/:id" element={<ReportWizard />} />
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
 
