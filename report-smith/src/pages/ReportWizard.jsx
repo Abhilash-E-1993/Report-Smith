@@ -4,6 +4,12 @@ import { useAuth } from "../context/AuthContext"
 import { useReport } from "../hooks/useReport"
 import ReportStepper from "../components/ReportStepper"
 import StepDetails from "../components/steps/StepDetails"
+import StepSections from "../components/steps/StepSections"
+import StepAiInput from "../components/steps/StepAiInput"
+import StepContentEditor from "../components/steps/StepContentEditor"
+
+
+
 
 export default function ReportWizard() {
   const { id } = useParams()
@@ -20,14 +26,14 @@ export default function ReportWizard() {
   const handleBackToDashboard = () => {
     navigate("/app")
   }
-
   const goNext = () => {
-    setStep((prev) => Math.min(prev + 1, 6))
+    setStep((prev) => Math.min(prev + 1, 7))
   }
-
+  
   const goPrev = () => {
     setStep((prev) => Math.max(prev - 1, 1))
   }
+  
 
   if (loading) {
     return (
@@ -79,10 +85,31 @@ export default function ReportWizard() {
             onSave={(data) => savePartial(data)}
           />
         )
+      case 3:
+        return (
+          <StepSections
+            report={report}
+            onSave={(data) => savePartial(data)}
+          />
+        )
+      case 4:
+        return (
+          <StepAiInput
+            report={report}
+            onSave={(data) => savePartial(data)}
+          />
+        )
+      case 5:
+        return (
+          <StepContentEditor
+            report={report}
+            onSave={(data) => savePartial(data)}
+          />
+        )
       default:
         return (
           <div className="text-sm text-slate-200">
-            <p>Step {step} content goes here (we&apos;ll build this next).</p>
+            <p>Step {step} content goes here.</p>
             <p className="mt-2 text-xs text-slate-400">
               Report ID: {report.id}
             </p>
@@ -90,6 +117,8 @@ export default function ReportWizard() {
         )
     }
   }
+  
+  
   
 
   return (

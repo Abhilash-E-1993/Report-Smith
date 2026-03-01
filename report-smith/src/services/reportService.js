@@ -13,41 +13,37 @@ import { db } from "../../firebase"
 
 // collection refs
 const reportsCol = collection(db, "reports")
-
 export async function createEmptyReport(ownerUid) {
-  try {
-    const now = serverTimestamp()
-    const docRef = await addDoc(reportsCol, {
-      ownerUid,
-      title: "",
-      studentName: "",
-      usn: "",
-      guideName: "",
-      proctorName: "",
-      academicYear: "",
-      department: "CSE",
+  const now = serverTimestamp()
+  const docRef = await addDoc(reportsCol, {
+    ownerUid,
 
-      footerType: "dept-and-page-number",
-      prelimNumberingStyle: "roman-then-arabic",
-      includeAcknowledgement: true,
+    title: "",
+    stream: "CSE",
+    semester: "",
+    academicYear: "",
+    submissionMonthYear: "",
+    proctorName: "",
+    students: [],
 
-      aiContent: {},
-      // manualContent: {}, // later if needed
+    footerType: "dept-and-page-number",
+    prelimNumberingStyle: "roman-then-arabic",
+    includeAcknowledgement: true,
 
-      createdAt: now,
-      updatedAt: now,
-    })
-    return docRef.id
-  } catch (err) {
-    const msg = err?.message || String(err)
-    if (msg.includes("permission") || err?.code === "permission-denied") {
-      throw new Error(
-        "Cannot create report: Firestore rules denied. Allow create on 'reports' for authenticated users."
-      )
-    }
-    throw err
-  }
+    // NEW
+    sections: [],        // user will define later
+    aiContent: {
+      abstract: "",
+      sections: {},
+      bibliography: [],
+    },
+
+    createdAt: now,
+    updatedAt: now,
+  })
+  return docRef.id
 }
+
 
 export async function getUserReports(ownerUid) {
   try {
