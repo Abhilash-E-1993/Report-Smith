@@ -1,15 +1,15 @@
+// src/pages/ReportWizard.jsx
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { useReport } from "../hooks/useReport"
 import ReportStepper from "../components/ReportStepper"
 import StepDetails from "../components/steps/StepDetails"
+import StepLayout from "../components/steps/StepLayout"
 import StepSections from "../components/steps/StepSections"
 import StepAiInput from "../components/steps/StepAiInput"
 import StepContentEditor from "../components/steps/StepContentEditor"
-
-
-
+import StepImages from "../components/steps/StepImages" // make sure this file exists
 
 export default function ReportWizard() {
   const { id } = useParams()
@@ -26,14 +26,14 @@ export default function ReportWizard() {
   const handleBackToDashboard = () => {
     navigate("/app")
   }
+
   const goNext = () => {
-    setStep((prev) => Math.min(prev + 1, 7))
+    setStep((prev) => Math.min(prev + 1, 7)) // 1–7 steps total
   }
-  
+
   const goPrev = () => {
     setStep((prev) => Math.max(prev - 1, 1))
   }
-  
 
   if (loading) {
     return (
@@ -58,6 +58,7 @@ export default function ReportWizard() {
       </div>
     )
   }
+
   if (report.ownerUid !== user.uid) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-slate-100">
@@ -73,14 +74,19 @@ export default function ReportWizard() {
       </div>
     )
   }
-  
 
-  // Placeholder step content (we'll fill each step in later steps)
   const renderStepContent = () => {
     switch (step) {
       case 1:
         return (
           <StepDetails
+            report={report}
+            onSave={(data) => savePartial(data)}
+          />
+        )
+      case 2:
+        return (
+          <StepLayout
             report={report}
             onSave={(data) => savePartial(data)}
           />
@@ -106,7 +112,15 @@ export default function ReportWizard() {
             onSave={(data) => savePartial(data)}
           />
         )
+      case 6:
+        return (
+          <StepImages
+            report={report}
+            onSave={(data) => savePartial(data)}
+          />
+        )
       default:
+        // Step 7: preview / export (to be implemented)
         return (
           <div className="text-sm text-slate-200">
             <p>Step {step} content goes here.</p>
@@ -117,9 +131,6 @@ export default function ReportWizard() {
         )
     }
   }
-  
-  
-  
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
@@ -157,7 +168,7 @@ export default function ReportWizard() {
           </button>
           <button
             onClick={goNext}
-            disabled={step === 6}
+            disabled={step === 7}
             className="text-xs px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-40"
           >
             Next
